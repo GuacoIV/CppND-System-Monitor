@@ -67,7 +67,24 @@ vector<int> LinuxParser::Pids() {
 }
 
 // TODO: Read and return the system memory utilization
-float LinuxParser::MemoryUtilization() { return 0.0; }
+float LinuxParser::MemoryUtilization() {
+  std::ifstream stream(kProcDirectory + kMeminfoFilename);
+  string label, value;
+  string line;
+  float memTotal, memFree;
+  if (stream.is_open()) {
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+
+      linestream >> label >> value;
+      if (label == "MemTotal:")
+        memTotal = stof(value);
+      else if (label == "MemFree:")
+        memFree = stof(value);
+    }
+  }
+  return (memTotal - memFree) / memTotal;
+}
 
 // TODO: Read and return the system uptime
 long LinuxParser::UpTime() {
@@ -99,24 +116,40 @@ long LinuxParser::IdleJiffies() { return 0; }
 vector<string> LinuxParser::CpuUtilization() { return {}; }
 
 // TODO: Read and return the total number of processes
-int LinuxParser::TotalProcesses()
-{
-  string totalProcesses;
+int LinuxParser::TotalProcesses() {
+  string label, totalProcesses;
   string line;
-  std::ifstream stream(kProcDirectory + kUptimeFilename);
+  const string processesPrefex = "processes";
+  std::ifstream stream(kProcDirectory + kStatFilename);
   if (stream.is_open()) {
-    std::getline(stream, line);
-    std::istringstream linestream(line);
-    const string processesPrefex = "processes";
-    if (std::equal(processesPrefex.begin(), processesPrefex.end(), std::istream_iterator<char>(linestream))) {
-      linestream >> totalProcesses;
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      linestream >> label >> totalProcesses;
+
+      if (label == processesPrefex)
+        return std::stoi(totalProcesses);
     }
   }
-  return std::stoi(totalProcesses);
 }
 
 // TODO: Read and return the number of running processes
-int LinuxParser::RunningProcesses() { return 0; }
+int LinuxParser::RunningProcesses()
+{
+  //return 0;
+  string label, runningProcs;
+  string line;
+  const string runningProcsPrefex = "procs_running";
+  std::ifstream stream(kProcDirectory + kStatFilename);
+  if (stream.is_open()) {
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+        linestream >> label >> runningProcs;
+
+      if (label == runningProcsPrefex)
+        return std::stoi(runningProcs);
+    }
+  }
+}
 
 // TODO: Read and return the command associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
