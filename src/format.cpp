@@ -1,4 +1,6 @@
 #include <string>
+#include <sstream>
+#include <iomanip>
 
 #include "format.h"
 
@@ -8,4 +10,12 @@ using std::string;
 // INPUT: Long int measuring seconds
 // OUTPUT: HH:MM:SS
 // REMOVE: [[maybe_unused]] once you define the function
-string Format::ElapsedTime(long seconds[[maybe_unused]]) { return string(); }
+string Format::ElapsedTime(long seconds) {
+    int hours = seconds / 3600;
+    int secondsNotInHours = seconds % 3600;
+    int minutes = secondsNotInHours / 60;
+    int secondsLeft = secondsNotInHours % 60;
+    std::ostringstream output;
+    output << std::setfill('0') << std::setw(2) << hours << ':' << std::setw(2) << minutes << ':' << std::setw(2) << secondsLeft;
+    return output.str();
+}
