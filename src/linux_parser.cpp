@@ -113,7 +113,21 @@ long LinuxParser::ActiveJiffies() { return 0; }
 long LinuxParser::IdleJiffies() { return 0; }
 
 // TODO: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() { return {}; }
+vector<string> LinuxParser::CpuUtilization() {
+  vector<string> result;
+  string line;
+  std::ifstream stream(kProcDirectory + kStatFilename);
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    string label, value;
+    std::istringstream linestream(line);
+    linestream >> label;
+    while (linestream >> value) {
+      result.push_back(value);
+    }
+  }
+  return result;
+ }
 
 // TODO: Read and return the total number of processes
 int LinuxParser::TotalProcesses() {
@@ -130,12 +144,12 @@ int LinuxParser::TotalProcesses() {
         return std::stoi(totalProcesses);
     }
   }
+  return 0;
 }
 
 // TODO: Read and return the number of running processes
 int LinuxParser::RunningProcesses()
 {
-  //return 0;
   string label, runningProcs;
   string line;
   const string runningProcsPrefex = "procs_running";
@@ -149,6 +163,7 @@ int LinuxParser::RunningProcesses()
         return std::stoi(runningProcs);
     }
   }
+  return 0;
 }
 
 // TODO: Read and return the command associated with a process
