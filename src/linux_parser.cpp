@@ -179,7 +179,7 @@ string LinuxParser::Ram(int pid[[maybe_unused]]) { return string(); }
 string LinuxParser::Uid(int pid) {
   string label, value;
   string line;
-  std::ifstream stream(kProcDirectory + "/" + to_string(pid) + "/" + kStatusFilename);
+  std::ifstream stream(kProcDirectory + '/' + to_string(pid) + '/' + kStatusFilename);
   if (stream.is_open()) {
     while (std::getline(stream, line)) {
       std::istringstream linestream(line);
@@ -214,4 +214,24 @@ string LinuxParser::User(int pid) {
 
 // TODO: Read and return the uptime of a process
 // REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::UpTime(int pid[[maybe_unused]]) { return 0; }
+long LinuxParser::UpTime(int pid) {
+  string value;
+  string line;
+  std::ifstream stream(kProcDirectory + '/' + to_string(pid) + '/' + kStatFilename);
+  if (stream.is_open() && std::getline(stream, line)) {
+      std::istringstream linestream (line);
+      int i = 1;
+      while (linestream >> value) {
+        if (i == 22)
+        {
+          time_t now;
+          time(&now);
+          time_t bootTime = difftime(now, UpTime());
+          time_t processStart = std::atof(value.c_str()) / sysconf(_SC_CLK_TCK);
+          return now - bootTime + processStart;
+        }
+        i++;
+      }
+    }
+  return 0;
+}
