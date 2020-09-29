@@ -21,15 +21,15 @@ int Process::Pid() { return _pid; }
 float Process::CpuUtilization() {
     long systemUptime = LinuxParser::UpTime();
     auto cpuValues = LinuxParser::CpuUtilization(_pid);
-    long utime = atol(cpuValues[13].c_str());
-    long stime = atol(cpuValues[14].c_str());
-    long cutime = atol(cpuValues[15].c_str());
-    long cstime = atol(cpuValues[16].c_str());
-    long starttime = atol(cpuValues[21].c_str());
+    float utime = atof(cpuValues[13].c_str());
+    float stime = atof(cpuValues[14].c_str());
+    float cutime = atof(cpuValues[15].c_str());
+    float cstime = atof(cpuValues[16].c_str());
+    float starttime = atof(cpuValues[21].c_str());
 
-    long total_time = utime + stime;
+    float total_time = utime + stime;
     total_time += cutime + cstime;
-    long secondsElapsed = systemUptime - (starttime / sysconf(_SC_CLK_TCK));
+    float secondsElapsed = systemUptime - (starttime / sysconf(_SC_CLK_TCK));
     return (total_time /sysconf(_SC_CLK_TCK)) / secondsElapsed;
 }
 
