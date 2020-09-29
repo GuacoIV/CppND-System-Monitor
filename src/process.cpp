@@ -40,7 +40,7 @@ string Process::Command() { return LinuxParser::Command(_pid); }
 string Process::Ram() {
     float kb = atof(LinuxParser::Ram(_pid).c_str());
     std::stringstream result("");
-    result << std::fixed << std::setprecision(2) << (_ram = (kb / (float)1024));
+    result << std::fixed << std::setprecision(2) << (kb / (float)1024);
     return result.str();
 }
 
@@ -53,5 +53,5 @@ long int Process::UpTime() { return LinuxParser::UpTime(_pid); }
 // TODO: Overload the "less than" comparison operator for Process objects
 // REMOVE: [[maybe_unused]] once you define the function
 bool Process::operator<(Process const& p) const {
-    return _ram < p._ram;
+    return atof(LinuxParser::Ram(_pid).c_str()) < atof(LinuxParser::Ram(p._pid).c_str());
 }
