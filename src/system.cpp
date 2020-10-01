@@ -3,6 +3,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "process.h"
 #include "processor.h"
@@ -14,21 +15,35 @@ using std::size_t;
 using std::string;
 using std::vector;
 
+System::System() {
+    _cpu = Processor();
+}
+
 // TODO: Return the system's CPU
 Processor& System::Cpu()
 {
-    cpu_ = Processor(LinuxParser::CpuUtilization());
-    return cpu_;
+    return _cpu;
 }
 
 // TODO: Return a container composed of the system's processes
 vector<Process>& System::Processes()
 {
-    processes_ = vector<Process>();
-    for (auto pid : LinuxParser::Pids())
-        processes_.push_back(Process(pid));
-    std::sort(processes_.rbegin(), processes_.rend());
-    return processes_;
+    auto pids = LinuxParser::Pids();
+    for (auto pid : pids) {
+        auto p = Process(pid);
+        auto found = std::find(_processes.begin(), _processes.end(), p);
+        if (found == _processes.end())
+            _processes.push_back(Process(pid));
+    }
+
+    for (auto pid : _processes) {
+        int p = pid.Pid();
+        auto found = std::find(pids.begin(), pids.end(), p);
+        if (found == pids.end())            
+            _processes.erase(std::find(_processes.begin(), _processes.end(), pid));
+    }
+    std::sort(_processes.rbegin(), _processes.rend());
+    return _processes;
 }
 
 // TODO: Return the system's kernel identifier (string)

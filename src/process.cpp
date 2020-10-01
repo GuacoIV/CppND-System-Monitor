@@ -17,7 +17,6 @@ int Process::Pid() { return _pid; }
 
 // TODO: Return this process's CPU utilization
 // As recommended by course: https://stackoverflow.com/questions/16726779/how-do-i-get-the-total-cpu-usage-of-an-application-from-proc-pid-stat/16736599#16736599
-// Note: This is currently calculating average since start of the process
 float Process::CpuUtilization() {
     long systemUptime = LinuxParser::UpTime();
     auto cpuValues = LinuxParser::CpuUtilization(_pid);
@@ -30,7 +29,10 @@ float Process::CpuUtilization() {
     float total_time = utime + stime;
     total_time += cutime + cstime;
     float secondsElapsed = systemUptime - (starttime / sysconf(_SC_CLK_TCK));
-    return (total_time /sysconf(_SC_CLK_TCK)) / secondsElapsed;
+    float result = ((total_time - _lastTotal_time) / sysconf(_SC_CLK_TCK)) / (secondsElapsed - _lastSecondsElapsed);
+    _lastTotal_time = total_time;
+    _lastSecondsElapsed = secondsElapsed;
+    return result;
 }
 
 // TODO: Return the command that generated this process
@@ -54,4 +56,12 @@ long int Process::UpTime() { return LinuxParser::UpTime(_pid); }
 // REMOVE: [[maybe_unused]] once you define the function
 bool Process::operator<(Process const& p) const {
     return atof(LinuxParser::Ram(_pid).c_str()) < atof(LinuxParser::Ram(p._pid).c_str());
+}
+
+bool Process::operator==(Process const& p) const {
+    return _pid == p._pid;
+}
+
+bool Process::operator!=(Process const& p) const {
+    return _pid != p._pid;
 }

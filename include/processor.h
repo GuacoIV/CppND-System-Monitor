@@ -6,12 +6,10 @@
 class Processor {
  public:
   float Utilization();  // TODO: See src/processor.cpp
-  Processor(std::vector<std::string> cpuValues) {
-      _cpuValues = cpuValues;
-    }
   // TODO: Declare any necessary private members
  private:
- std::vector<std::string> _cpuValues;
+ float _lastCPUUsageTimeSinceBoot{0};
+ float _lastCPUTimeSinceBoot{0};
 };
 
 #endif

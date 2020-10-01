@@ -9,6 +9,7 @@
 
 class System {
  public:
+  System();
   Processor& Cpu();                   // TODO: See src/system.cpp
   std::vector<Process>& Processes();  // TODO: See src/system.cpp
   float MemoryUtilization();          // TODO: See src/system.cpp
@@ -20,8 +21,8 @@ class System {
 
   // TODO: Define any necessary private members
  private:
-  Processor cpu_ = Processor({"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"});
-  std::vector<Process> processes_ = {};
+  Processor _cpu = Processor();
+  std::vector<Process> _processes = std::vector<Process>();
 };
 
 #endif
